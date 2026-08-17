@@ -1,9 +1,9 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Activity,
-  AlertOctagon,
   AlertTriangle,
   Bell,
+  Bot,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
@@ -19,6 +19,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Radio,
+  Sparkles,
   User,
   X,
 } from "lucide-react";
@@ -37,6 +38,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { AIAssistantDrawer } from "@/components/ai/AIAssistantDrawer";
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -44,12 +46,22 @@ const NAV_ITEMS = [
   { to: "/ecg", label: "ECG Monitor", icon: Activity },
   { to: "/activity", label: "Activity", icon: Footprints },
   { to: "/sleep", label: "Sleep", icon: Moon },
+  { to: "/ai-assistant", label: "AI Assistant", icon: Sparkles },
   { to: "/trends", label: "Health History", icon: History },
   { to: "/alerts", label: "Alerts", icon: AlertTriangle },
-  { to: "/emergency", label: "Emergency", icon: AlertOctagon },
   { to: "/devices", label: "Smart Band", icon: Cpu },
   { to: "/reports", label: "Reports", icon: FileText },
 ] as const;
+
+const getInitialCollapsed = () => {
+  if (typeof window !== "undefined") {
+    const saved = localStorage.getItem("smarthealth_sidebar_collapsed");
+    if (saved !== null) {
+      return saved === "true";
+    }
+  }
+  return false;
+};
 
 export function AppShell({
   title,
@@ -64,7 +76,18 @@ export function AppShell({
 }) {
   const { user } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsedState] = useState(getInitialCollapsed);
+
+  const setCollapsed = (val: boolean | ((prev: boolean) => boolean)) => {
+    setCollapsedState((prev) => {
+      const nextVal = typeof val === "function" ? val(prev) : val;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("smarthealth_sidebar_collapsed", String(nextVal));
+      }
+      return nextVal;
+    });
+  };
+
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const currentUser = user || DEMO_USERS[0]!;
   const { connected, emergencyActive, lastSyncSecondsAgo } = useSimulation();
@@ -181,9 +204,6 @@ export function AppShell({
                     active
                       ? "bg-primary text-white shadow-sm font-bold"
                       : "text-muted-foreground hover:bg-accent hover:text-foreground",
-                    item.to === "/emergency" &&
-                      emergencyActive &&
-                      "bg-critical text-white animate-pulse",
                   )}
                   aria-current={active ? "page" : undefined}
                 >
@@ -314,6 +334,9 @@ export function AppShell({
 
               {/* Header Right Status Badges */}
               <div className="flex items-center gap-3">
+                {/* Action button if supplied */}
+                {action}
+
                 {/* System & Band Connection Indicator */}
                 <div className="hidden md:flex items-center gap-2">
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
@@ -406,6 +429,9 @@ export function AppShell({
             {children}
           </main>
         </div>
+
+        {/* Global AI Health Assistant Component */}
+        <AIAssistantDrawer />
       </div>
     </TooltipProvider>
   );

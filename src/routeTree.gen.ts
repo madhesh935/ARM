@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ActivityRouteImport } from './routes/activity'
 import { Route as AdaptiveRouteImport } from './routes/adaptive'
 import { Route as AiAnalysisRouteImport } from './routes/ai-analysis'
+import { Route as AiAssistantRouteImport } from './routes/ai-assistant'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DevicesRouteImport } from './routes/devices'
 import { Route as EcgRouteImport } from './routes/ecg'
@@ -49,6 +50,11 @@ const AdaptiveRoute = AdaptiveRouteImport.update({
 const AiAnalysisRoute = AiAnalysisRouteImport.update({
   id: '/ai-analysis',
   path: '/ai-analysis',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiAssistantRoute = AiAssistantRouteImport.update({
+  id: '/ai-assistant',
+  path: '/ai-assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -142,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/activity': typeof ActivityRoute
   '/adaptive': typeof AdaptiveRoute
   '/ai-analysis': typeof AiAnalysisRoute
+  '/ai-assistant': typeof AiAssistantRoute
   '/dashboard': typeof DashboardRoute
   '/devices': typeof DevicesRoute
   '/ecg': typeof EcgRoute
@@ -165,6 +172,7 @@ export interface FileRoutesByTo {
   '/activity': typeof ActivityRoute
   '/adaptive': typeof AdaptiveRoute
   '/ai-analysis': typeof AiAnalysisRoute
+  '/ai-assistant': typeof AiAssistantRoute
   '/dashboard': typeof DashboardRoute
   '/devices': typeof DevicesRoute
   '/ecg': typeof EcgRoute
@@ -189,6 +197,7 @@ export interface FileRoutesById {
   '/activity': typeof ActivityRoute
   '/adaptive': typeof AdaptiveRoute
   '/ai-analysis': typeof AiAnalysisRoute
+  '/ai-assistant': typeof AiAssistantRoute
   '/dashboard': typeof DashboardRoute
   '/devices': typeof DevicesRoute
   '/ecg': typeof EcgRoute
@@ -214,6 +223,7 @@ export interface FileRouteTypes {
     | '/activity'
     | '/adaptive'
     | '/ai-analysis'
+    | '/ai-assistant'
     | '/dashboard'
     | '/devices'
     | '/ecg'
@@ -237,6 +247,7 @@ export interface FileRouteTypes {
     | '/activity'
     | '/adaptive'
     | '/ai-analysis'
+    | '/ai-assistant'
     | '/dashboard'
     | '/devices'
     | '/ecg'
@@ -260,6 +271,7 @@ export interface FileRouteTypes {
     | '/activity'
     | '/adaptive'
     | '/ai-analysis'
+    | '/ai-assistant'
     | '/dashboard'
     | '/devices'
     | '/ecg'
@@ -284,6 +296,7 @@ export interface RootRouteChildren {
   ActivityRoute: typeof ActivityRoute
   AdaptiveRoute: typeof AdaptiveRoute
   AiAnalysisRoute: typeof AiAnalysisRoute
+  AiAssistantRoute: typeof AiAssistantRoute
   DashboardRoute: typeof DashboardRoute
   DevicesRoute: typeof DevicesRoute
   EcgRoute: typeof EcgRoute
@@ -331,6 +344,13 @@ declare module '@tanstack/react-router' {
       path: '/ai-analysis'
       fullPath: '/ai-analysis'
       preLoaderRoute: typeof AiAnalysisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-assistant': {
+      id: '/ai-assistant'
+      path: '/ai-assistant'
+      fullPath: '/ai-assistant'
+      preLoaderRoute: typeof AiAssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -460,6 +480,7 @@ const rootRouteChildren: RootRouteChildren = {
   ActivityRoute: ActivityRoute,
   AdaptiveRoute: AdaptiveRoute,
   AiAnalysisRoute: AiAnalysisRoute,
+  AiAssistantRoute: AiAssistantRoute,
   DashboardRoute: DashboardRoute,
   DevicesRoute: DevicesRoute,
   EcgRoute: EcgRoute,

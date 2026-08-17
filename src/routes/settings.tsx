@@ -63,12 +63,22 @@ export function SettingsPage() {
       subtitle="Configure clinical alert bounds, emergency escalation, and smart band device parameters"
     >
       <Tabs defaultValue="thresholds" className="space-y-4">
-        <TabsList className="grid grid-cols-2 sm:grid-cols-5 w-full max-w-2xl text-xs">
-          <TabsTrigger value="thresholds">Alert Thresholds</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="emergency">Emergency Routing</TabsTrigger>
-          <TabsTrigger value="smartband">Smart Band</TabsTrigger>
-          <TabsTrigger value="account">Profile & Security</TabsTrigger>
+        <TabsList className="flex flex-wrap h-auto gap-1 w-full max-w-2xl text-xs p-1">
+          <TabsTrigger value="thresholds" className="rounded-lg">
+            Alert Thresholds
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="rounded-lg">
+            Notifications
+          </TabsTrigger>
+          <TabsTrigger value="emergency" className="rounded-lg">
+            Emergency Routing
+          </TabsTrigger>
+          <TabsTrigger value="smartband" className="rounded-lg">
+            Smart Band
+          </TabsTrigger>
+          <TabsTrigger value="account" className="rounded-lg">
+            Profile & Security
+          </TabsTrigger>
         </TabsList>
 
         {/* 1. Alert Thresholds */}

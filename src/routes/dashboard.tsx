@@ -126,45 +126,218 @@ export function DashboardPage() {
       title="Health Cockpit"
       subtitle={`Live biometrics & continuous wearable telemetry for ${patient.name}`}
     >
-      {/* Emergency Active Alert Banner */}
-      {emergencyActive ? (
-        <div className="flex items-center justify-between gap-4 rounded-2xl border-2 border-critical bg-critical-soft p-4 text-critical shadow-md animate-pulse">
-          <div className="flex items-center gap-3">
-            <span className="grid size-10 place-items-center rounded-xl bg-critical text-white shadow-xs">
-              <ShieldAlert className="size-6" />
-            </span>
-            <div>
-              <h3 className="text-sm font-bold">
-                CRITICAL EMERGENCY — Fall Detected with Tachycardia
-              </h3>
-              <p className="text-xs opacity-90">
-                Automated SOS broadcast active to emergency contacts (Leela Menon, Rahul Menon) and
-                911 relay.
-              </p>
+      {/* 1. TOP HERO ROW: 4 Primary Vitals 2x2 Grid (Left) + Dedicated Health Score Card (Right) */}
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,1.1fr)]">
+        {/* 4 PRIMARY VITALS 2x2 GRID (LEFT) */}
+        <div className="grid gap-4 sm:grid-cols-2">
+          {/* Vital 1: Heart Rate */}
+          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-xs transition-all hover:border-rose-500/40 hover:shadow-md flex flex-col justify-between">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="grid size-8.5 place-items-center rounded-xl bg-rose-500/10 text-rose-500">
+                  <HeartPulse className="size-4.5 animate-pulse" />
+                </span>
+                <div>
+                  <span className="text-xs font-bold text-foreground">Heart Rate</span>
+                  <p className="text-[10px] text-muted-foreground font-medium">
+                    Continuous PPG · 1 Hz
+                  </p>
+                </div>
+              </div>
+              <StatusBadge
+                tone={hrTone}
+                showIcon={false}
+                className="text-[10px] px-2 py-0.5 font-bold"
+              >
+                {hrStatus}
+              </StatusBadge>
+            </div>
+
+            <div className="my-3 flex items-baseline justify-between">
+              <div className="flex items-baseline gap-1.5">
+                <span className="metric text-3xl font-black text-rose-600 dark:text-rose-400 tracking-tight">
+                  {hr}
+                </span>
+                <span className="text-xs font-bold text-muted-foreground uppercase">BPM</span>
+              </div>
+              <div className="text-right text-[11px] text-muted-foreground">
+                <span>24h Range</span>
+                <div className="metric font-bold text-foreground">56 – 124 BPM</div>
+              </div>
+            </div>
+
+            <div className="space-y-1.5 border-t border-border/60 pt-2.5 text-[11px]">
+              <div className="flex justify-between text-muted-foreground">
+                <span>
+                  Resting: <strong className="text-foreground font-semibold">58 BPM</strong>
+                </span>
+                <span>
+                  HRV: <strong className="text-foreground font-semibold">48 ms</strong>
+                </span>
+              </div>
+              <Progress value={Math.min(100, (hr / 140) * 100)} className="h-1.5 bg-rose-500/10" />
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-card text-foreground"
-              onClick={() => {
-                resetEmergencySimulation();
-                toast.success("Emergency alarm dismissed");
-              }}
-            >
-              <RotateCcw className="mr-1.5 size-3.5" /> Dismiss Alarm
-            </Button>
-            <Button size="sm" variant="destructive" asChild>
-              <Link to="/emergency">Open Emergency Console</Link>
-            </Button>
+
+          {/* Vital 2: Blood Oxygen (SpO2) */}
+          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-xs transition-all hover:border-sky-500/40 hover:shadow-md flex flex-col justify-between">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="grid size-8.5 place-items-center rounded-xl bg-sky-500/10 text-sky-500">
+                  <Droplets className="size-4.5" />
+                </span>
+                <div>
+                  <span className="text-xs font-bold text-foreground">Blood Oxygen</span>
+                  <p className="text-[10px] text-muted-foreground font-medium">
+                    Dual Red/IR Sensor
+                  </p>
+                </div>
+              </div>
+              <StatusBadge
+                tone={spo2Tone}
+                showIcon={false}
+                className="text-[10px] px-2 py-0.5 font-bold"
+              >
+                {spo2Status}
+              </StatusBadge>
+            </div>
+
+            <div className="my-3 flex items-baseline justify-between">
+              <div className="flex items-baseline gap-1.5">
+                <span className="metric text-3xl font-black text-sky-600 dark:text-sky-400 tracking-tight">
+                  {spo2}%
+                </span>
+                <span className="text-xs font-bold text-muted-foreground uppercase">SpO₂</span>
+              </div>
+              <div className="text-right text-[11px] text-muted-foreground">
+                <span>Perfusion Index</span>
+                <div className="metric font-bold text-foreground">PI: 4.8%</div>
+              </div>
+            </div>
+
+            <div className="space-y-1.5 border-t border-border/60 pt-2.5 text-[11px]">
+              <div className="flex justify-between text-muted-foreground">
+                <span>
+                  Signal: <strong className="text-normal font-semibold">Excellent</strong>
+                </span>
+                <span>
+                  Min: <strong className="text-foreground font-semibold">96%</strong>
+                </span>
+              </div>
+              <Progress value={spo2} className="h-1.5 bg-sky-500/10" />
+            </div>
+          </div>
+
+          {/* Vital 3: Body Temperature */}
+          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-xs transition-all hover:border-amber-500/40 hover:shadow-md flex flex-col justify-between">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="grid size-8.5 place-items-center rounded-xl bg-amber-500/10 text-amber-500">
+                  <Thermometer className="size-4.5" />
+                </span>
+                <div>
+                  <span className="text-xs font-bold text-foreground">Body Temperature</span>
+                  <p className="text-[10px] text-muted-foreground font-medium">
+                    NTC Skin Thermistor
+                  </p>
+                </div>
+              </div>
+              <StatusBadge
+                tone={tempTone}
+                showIcon={false}
+                className="text-[10px] px-2 py-0.5 font-bold"
+              >
+                {tempStatus}
+              </StatusBadge>
+            </div>
+
+            <div className="my-3 flex items-baseline justify-between">
+              <div className="flex items-baseline gap-1.5">
+                <span className="metric text-3xl font-black text-amber-600 dark:text-amber-400 tracking-tight">
+                  {temp.toFixed(1)}
+                </span>
+                <span className="text-xs font-bold text-muted-foreground">°C</span>
+              </div>
+              <div className="text-right text-[11px] text-muted-foreground">
+                <span>Fahrenheit</span>
+                <div className="metric font-bold text-foreground">
+                  {((temp * 9) / 5 + 32).toFixed(1)} °F
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-1.5 border-t border-border/60 pt-2.5 text-[11px]">
+              <div className="flex justify-between text-muted-foreground">
+                <span>
+                  Baseline: <strong className="text-foreground font-semibold">36.5–37.2°C</strong>
+                </span>
+                <span>
+                  Drift: <strong className="text-normal font-semibold">0.0°C</strong>
+                </span>
+              </div>
+              <Progress
+                value={Math.min(100, ((temp - 35) / 5) * 100)}
+                className="h-1.5 bg-amber-500/10"
+              />
+            </div>
+          </div>
+
+          {/* Vital 4: Blood Pressure */}
+          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-xs transition-all hover:border-indigo-500/40 hover:shadow-md flex flex-col justify-between">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="grid size-8.5 place-items-center rounded-xl bg-indigo-500/10 text-indigo-500">
+                  <Activity className="size-4.5" />
+                </span>
+                <div>
+                  <span className="text-xs font-bold text-foreground">Blood Pressure</span>
+                  <p className="text-[10px] text-muted-foreground font-medium">
+                    PTT Pulse Transit Time
+                  </p>
+                </div>
+              </div>
+              <StatusBadge
+                tone={bpTone}
+                showIcon={false}
+                className="text-[10px] px-2 py-0.5 font-bold"
+              >
+                {bpStatus}
+              </StatusBadge>
+            </div>
+
+            <div className="my-3 flex items-baseline justify-between">
+              <div className="flex items-baseline gap-1.5">
+                <span className="metric text-3xl font-black text-indigo-600 dark:text-indigo-400 tracking-tight">
+                  {sys}/{dia}
+                </span>
+                <span className="text-xs font-bold text-muted-foreground uppercase">mmHg</span>
+              </div>
+              <div className="text-right text-[11px] text-muted-foreground">
+                <span>Mean Arterial (MAP)</span>
+                <div className="metric font-bold text-foreground">
+                  {Math.round(dia + (sys - dia) / 3)} mmHg
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-1.5 border-t border-border/60 pt-2.5 text-[11px]">
+              <div className="flex justify-between text-muted-foreground">
+                <span>
+                  Systolic: <strong className="text-foreground font-semibold">{sys}</strong>
+                </span>
+                <span>
+                  Diastolic: <strong className="text-foreground font-semibold">{dia}</strong>
+                </span>
+              </div>
+              <Progress
+                value={Math.min(100, (sys / 160) * 100)}
+                className="h-1.5 bg-indigo-500/10"
+              />
+            </div>
           </div>
         </div>
-      ) : null}
 
-      {/* 1. TOP HERO ROW: Dedicated Health Score Card (Left) + 4 Primary Vitals Grid (Right) */}
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,2fr)]">
-        {/* DEDICATED HEALTH SCORE & WEARABLE INSIGHTS BOX */}
+        {/* DEDICATED HEALTH SCORE & RECOVERY BOX (RIGHT) */}
         <div className="rounded-2xl border border-border/80 bg-gradient-to-br from-card via-card to-primary/5 p-5 shadow-xs flex flex-col justify-between space-y-3.5">
           <div className="space-y-3">
             {/* Header: Title on Left, Score Ring & Prime Readiness on Right */}
@@ -306,191 +479,6 @@ export function DashboardPage() {
               <Radio className="size-3 text-primary" /> {device.name}
             </span>
             <span className="metric">Sync {lastSyncSecondsAgo}s ago</span>
-          </div>
-        </div>
-
-        {/* 4 PRIMARY VITALS 2x2 GRID */}
-        <div className="grid gap-4 sm:grid-cols-2">
-          {/* Vital 1: Heart Rate */}
-          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-xs transition-all hover:border-rose-500/40 hover:shadow-md flex flex-col justify-between">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="grid size-8 place-items-center rounded-xl bg-rose-500/10 text-rose-500">
-                  <HeartPulse className="size-4.5 animate-pulse" />
-                </span>
-                <div>
-                  <span className="text-xs font-bold text-foreground">Heart Rate</span>
-                  <p className="text-[10px] text-muted-foreground font-medium">Optical PPG</p>
-                </div>
-              </div>
-              <StatusBadge tone={hrTone} showIcon={false} className="text-[10px] px-2 py-0.5">
-                {hrStatus}
-              </StatusBadge>
-            </div>
-
-            <div className="my-3 flex items-baseline justify-between">
-              <div className="flex items-baseline gap-1.5">
-                <span className="metric text-3xl font-extrabold text-foreground tracking-tight">
-                  {hr}
-                </span>
-                <span className="text-xs font-bold text-muted-foreground uppercase">BPM</span>
-              </div>
-              <div className="text-right text-[11px] text-muted-foreground">
-                <span>24h Range</span>
-                <div className="metric font-bold text-foreground">56 – 124 BPM</div>
-              </div>
-            </div>
-
-            <div className="space-y-1.5 border-t border-border/60 pt-2.5 text-[11px]">
-              <div className="flex justify-between text-muted-foreground">
-                <span>
-                  Resting: <strong className="text-foreground font-semibold">58 BPM</strong>
-                </span>
-                <span>
-                  HRV: <strong className="text-foreground font-semibold">48 ms</strong>
-                </span>
-              </div>
-              <Progress value={Math.min(100, (hr / 140) * 100)} className="h-1.5 bg-rose-500/10" />
-            </div>
-          </div>
-
-          {/* Vital 2: Blood Oxygen (SpO2) */}
-          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-xs transition-all hover:border-sky-500/40 hover:shadow-md flex flex-col justify-between">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="grid size-8 place-items-center rounded-xl bg-sky-500/10 text-sky-500">
-                  <Droplets className="size-4.5" />
-                </span>
-                <div>
-                  <span className="text-xs font-bold text-foreground">Blood Oxygen</span>
-                  <p className="text-[10px] text-muted-foreground font-medium">Red/IR Sensor</p>
-                </div>
-              </div>
-              <StatusBadge tone={spo2Tone} showIcon={false} className="text-[10px] px-2 py-0.5">
-                {spo2Status}
-              </StatusBadge>
-            </div>
-
-            <div className="my-3 flex items-baseline justify-between">
-              <div className="flex items-baseline gap-1.5">
-                <span className="metric text-3xl font-extrabold text-sky-600 dark:text-sky-400 tracking-tight">
-                  {spo2}%
-                </span>
-                <span className="text-xs font-bold text-muted-foreground uppercase">SpO₂</span>
-              </div>
-              <div className="text-right text-[11px] text-muted-foreground">
-                <span>Perfusion</span>
-                <div className="metric font-bold text-foreground">PI: 4.8%</div>
-              </div>
-            </div>
-
-            <div className="space-y-1.5 border-t border-border/60 pt-2.5 text-[11px]">
-              <div className="flex justify-between text-muted-foreground">
-                <span>
-                  Signal: <strong className="text-normal font-semibold">Excellent</strong>
-                </span>
-                <span>
-                  Min: <strong className="text-foreground font-semibold">96%</strong>
-                </span>
-              </div>
-              <Progress value={spo2} className="h-1.5 bg-sky-500/10" />
-            </div>
-          </div>
-
-          {/* Vital 3: Body Temperature */}
-          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-xs transition-all hover:border-amber-500/40 hover:shadow-md flex flex-col justify-between">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="grid size-8 place-items-center rounded-xl bg-amber-500/10 text-amber-500">
-                  <Thermometer className="size-4.5" />
-                </span>
-                <div>
-                  <span className="text-xs font-bold text-foreground">Body Temperature</span>
-                  <p className="text-[10px] text-muted-foreground font-medium">Skin Thermistor</p>
-                </div>
-              </div>
-              <StatusBadge tone={tempTone} showIcon={false} className="text-[10px] px-2 py-0.5">
-                {tempStatus}
-              </StatusBadge>
-            </div>
-
-            <div className="my-3 flex items-baseline justify-between">
-              <div className="flex items-baseline gap-1.5">
-                <span className="metric text-3xl font-extrabold text-amber-600 dark:text-amber-400 tracking-tight">
-                  {temp.toFixed(1)}
-                </span>
-                <span className="text-xs font-bold text-muted-foreground">°C</span>
-              </div>
-              <div className="text-right text-[11px] text-muted-foreground">
-                <span>Fahrenheit</span>
-                <div className="metric font-bold text-foreground">
-                  {((temp * 9) / 5 + 32).toFixed(1)} °F
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-1.5 border-t border-border/60 pt-2.5 text-[11px]">
-              <div className="flex justify-between text-muted-foreground">
-                <span>
-                  Baseline: <strong className="text-foreground font-semibold">36.5–37.2°C</strong>
-                </span>
-                <span>
-                  Drift: <strong className="text-normal font-semibold">0.0°C</strong>
-                </span>
-              </div>
-              <Progress
-                value={Math.min(100, ((temp - 35) / 5) * 100)}
-                className="h-1.5 bg-amber-500/10"
-              />
-            </div>
-          </div>
-
-          {/* Vital 4: Blood Pressure */}
-          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-xs transition-all hover:border-indigo-500/40 hover:shadow-md flex flex-col justify-between">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="grid size-8 place-items-center rounded-xl bg-indigo-500/10 text-indigo-500">
-                  <Activity className="size-4.5" />
-                </span>
-                <div>
-                  <span className="text-xs font-bold text-foreground">Blood Pressure</span>
-                  <p className="text-[10px] text-muted-foreground font-medium">PTT Wave Analysis</p>
-                </div>
-              </div>
-              <StatusBadge tone={bpTone} showIcon={false} className="text-[10px] px-2 py-0.5">
-                {bpStatus}
-              </StatusBadge>
-            </div>
-
-            <div className="my-3 flex items-baseline justify-between">
-              <div className="flex items-baseline gap-1.5">
-                <span className="metric text-3xl font-extrabold text-foreground tracking-tight">
-                  {sys}/{dia}
-                </span>
-                <span className="text-xs font-bold text-muted-foreground uppercase">mmHg</span>
-              </div>
-              <div className="text-right text-[11px] text-muted-foreground">
-                <span>Mean Arterial</span>
-                <div className="metric font-bold text-foreground">
-                  {Math.round(dia + (sys - dia) / 3)} mmHg
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-1.5 border-t border-border/60 pt-2.5 text-[11px]">
-              <div className="flex justify-between text-muted-foreground">
-                <span>
-                  Systolic: <strong className="text-foreground font-semibold">{sys}</strong>
-                </span>
-                <span>
-                  Diastolic: <strong className="text-foreground font-semibold">{dia}</strong>
-                </span>
-              </div>
-              <Progress
-                value={Math.min(100, (sys / 160) * 100)}
-                className="h-1.5 bg-indigo-500/10"
-              />
-            </div>
           </div>
         </div>
       </div>

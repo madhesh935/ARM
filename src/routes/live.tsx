@@ -69,54 +69,7 @@ export function LiveVitalsPage() {
       title="Live Biometric Telemetry & Waveform Stream"
       subtitle="Real-time optical PPG and physiological parameter stream with on-device ARM DSP analysis (100 Hz sensor sync)"
     >
-      {/* 1. TOP STREAM CONTROL & SIGNAL FIDELITY BANNER */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-card p-4.5 shadow-xs">
-        <div className="flex flex-wrap items-center gap-3.5 sm:gap-5">
-          <LiveDot
-            active={running && connected}
-            label={running && connected ? "Stream Active (100 Hz Sync)" : "Stream Paused"}
-          />
-          <SignalQualityIndicator quality={latest?.signalQuality ?? "Excellent"} />
-          <StatusBadge
-            tone={connected ? "normal" : "offline"}
-            className="text-xs px-2.5 py-0.5 font-bold"
-          >
-            {connected ? "SmartBand SB-01 Pro (BLE 5.3 Active)" : "Link Offline"}
-          </StatusBadge>
-          <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Radio className="size-3.5 text-primary" />
-            <span>
-              Perfusion Index:{" "}
-              <strong className="text-foreground font-semibold">{perfusionIndex}%</strong>
-            </span>
-          </div>
-          <span className="metric text-xs text-muted-foreground">
-            Buffered: <strong className="text-foreground font-semibold">{samples.length}</strong>{" "}
-            pkts
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            variant={running ? "secondary" : "default"}
-            size="sm"
-            onClick={running ? pause : start}
-            disabled={!connected}
-            className="h-8.5 font-semibold text-xs"
-          >
-            {running ? <Pause className="mr-1.5 size-3.5" /> : <Play className="mr-1.5 size-3.5" />}
-            {running ? "Pause Stream" : "Resume Stream"}
-          </Button>
-
-          <Button variant="outline" size="sm" asChild className="h-8.5 text-xs font-semibold">
-            <Link to="/devices">
-              Smart Band Console <ArrowRight className="ml-1 size-3" />
-            </Link>
-          </Button>
-        </div>
-      </div>
-
-      {/* 2. PRIMARY 4 VITALS METRIC CARDS */}
+      {/* 1. PRIMARY 4 VITALS METRIC CARDS */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <PrimaryVitalCard
           label="Heart Rate"
